@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="DataPoint.cs" />
     <Compile Include="KNearestNeighbor.cs" />
+    <Compile Include="NaiveBayes.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
