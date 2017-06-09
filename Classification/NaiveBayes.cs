@@ -45,15 +45,12 @@ namespace Classification
                 sumTextsInClasses[c] = classTexts[c].Length;
                 countTexts += classTexts[c].Length;
                 wordFreqInClasses[c] = new Dictionary<string, int>();
-                Console.WriteLine("Class " + c);
                 for(int i = 0; i < classTexts[c].Length; i++)
                 {
-                    Console.WriteLine("Text " + i);
                     string[] words = classTexts[c][i].Split(' ');
                     sumWordsInClasses[c] += words.Length;
                     for(int w = 0; w < words.Length; w++)
                     {
-                        Console.WriteLine("Word " + w + " = " + words[w]);
                         if (wordFreqInClasses[c].ContainsKey(words[w]))
                         {
                             wordFreqInClasses[c][words[w]] += 1;
@@ -75,15 +72,19 @@ namespace Classification
             double[] scoresOfClasses = new double[classes.Length];
             double maxClassScore = double.MinValue;
             string[] words = text.Split(' ');
+            Console.WriteLine("NB Started");
+            Console.WriteLine("Text = '{0}'", text);
             //count a probability of being in class c for each class
-            for(int c = 0; c < classes.Length; c++)
+            for (int c = 0; c < classes.Length; c++)
             {
-                currentClassScore = Math.Log(sumTextsInClasses[c] / countTexts);
+                Console.Write("Class {0} score = ", c);
+                currentClassScore = Math.Log(sumTextsInClasses[c] / (double)countTexts);
                 for (int i = 0; i < words.Length; i++)
                 {
                     wordFreqInClasses[c].TryGetValue(words[i],out int w);
-                    currentClassScore += Math.Log((w + 1) / (uniqueWords + sumWordsInClasses[c]));
+                    currentClassScore += Math.Log((w + 1) / (double)(uniqueWords + sumWordsInClasses[c]));
                 }
+                Console.WriteLine("{0:F3}", currentClassScore);
                 if(currentClassScore > maxClassScore)
                 {
                     maxClassScore = currentClassScore;
@@ -98,27 +99,38 @@ namespace Classification
             {
                 percent += Math.Pow(Math.E, score);
             }
-            percent = (Math.Pow(Math.E, maxClassScore) / percent) * 100;
+            double res = 0;
+            for(int sc = 0; sc < scoresOfClasses.Length; sc++)
+            {
+                res = (Math.Pow(Math.E, scoresOfClasses[sc]) / percent) * 100;
+                Console.WriteLine("Text is {0:F3}% in class {1}", res, sc);
+            }
+
+            Console.WriteLine("Text is {0}", classes[resultClass]);
         }
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("Bayes is learning!");
+            sb.AppendLine("Bayes is learning!");
             sb.Append("Classes:");
+            int i = 0;
             foreach (string s in classes)
-                sb.Append(" " + s);
+            {
+                sb.Append(" " + i + "-" + s);
+                i++;
+            }
             sb.AppendLine();
             sb.Append("Amount of texts in class:");
             foreach (int s in sumTextsInClasses)
                 sb.Append(" " + s);
             sb.AppendLine();
-            sb.AppendLine(string.Format("Amount of texts: {01}", countTexts));
+            sb.AppendLine(string.Format("Amount of texts: {0}", countTexts));
             sb.Append("Amount of words in class:");
             foreach (int s in sumWordsInClasses)
                 sb.Append(" " + s);
             sb.AppendLine();
-            sb.AppendLine(string.Format("Amount of unique words: {01}", uniqueWords));
+            sb.AppendLine(string.Format("Amount of unique words: {0}", uniqueWords));
             return sb.ToString();
         }
     }

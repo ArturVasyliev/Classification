@@ -8,8 +8,12 @@ namespace Classification
 {
     class KNearestNeighbor
     {
+        // Learned points
         private DataPoint[] learnedPoints;
+
+        // Processed points
         private List<DataPoint> data;
+
         private int learnedLength;
         private int classesCount;
 
@@ -38,6 +42,7 @@ namespace Classification
                 throw new Exception("K must be lower than amount of learned elements");
             }
 
+            // Array with distance to current point and index of point from learned set
             double[][] distAndIndex = new double[learnedLength][];
             for (int i = 0; i < learnedLength; i++)
             {
@@ -56,7 +61,7 @@ namespace Classification
                     distAndIndex[index][1] = index;
                 });
 
-                // Sort distances and take top K (?What happens in case of multiple points at the same distance?)
+                // Sort distances and take top K
                 var chosenDistances = distAndIndex.AsParallel().OrderBy(t => t[0]).Take(k);
 
                 Console.WriteLine("Nearest K:");
@@ -78,9 +83,7 @@ namespace Classification
                 points[i].Class = frequencyVocabulary.IndexOf(frequencyVocabulary.Max());
 
                 Console.WriteLine("{0} in class {1} = {2}%", points[i], points[i].Class, (frequencyVocabulary[points[i].Class]/ chosenDistances.Count())*100.0);
-
             }
-
             data.AddRange(points);
         }
 
